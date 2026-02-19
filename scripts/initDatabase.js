@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const pool = require('../src/config/database');
 
 // Initialize database schema

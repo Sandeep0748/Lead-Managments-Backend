@@ -45,6 +45,7 @@ const login = async (req, res) => {
         id: admin.id,
         email: admin.email,
         name: admin.name,
+        role: 'admin',
       },
     });
   } catch (error) {

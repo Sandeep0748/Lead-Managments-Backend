@@ -38,8 +38,19 @@ const createLead = async (leadData) => {
 
     const lead = result.rows[0];
 
-    // Add to Google Sheets asynchronously
-    addLeadToSheet(lead).catch(err => console.error('Google Sheets sync error:', err));
+    // Add to Google Sheets asynchronously (don't wait for it to complete)
+    // This ensures the lead is saved to database immediately
+    addLeadToSheet(lead)
+      .then(syncResult => {
+        if (syncResult.success) {
+          console.log(`📊 Lead ${lead.id} successfully synced to Google Sheets (row ${syncResult.sheetRowId})`);
+        } else {
+          console.warn(`📊 Google Sheets sync warning for lead ${lead.id}: ${syncResult.error}`);
+        }
+      })
+      .catch(err => {
+        console.error(`📊 Google Sheets sync error for lead ${lead.id}:`, err.message);
+      });
 
     return lead;
   } catch (error) {

@@ -2,11 +2,7 @@ require('dotenv').config();
 
 // Required environment variables
 const REQUIRED_ENV_VARS = [
-  'DB_HOST',
-  'DB_PORT',
-  'DB_NAME',
-  'DB_USER',
-  'DB_PASSWORD',
+  'DATABASE_URL',
   'JWT_SECRET',
   'ADMIN_EMAIL',
 ];

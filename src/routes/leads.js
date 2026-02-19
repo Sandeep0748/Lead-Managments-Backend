@@ -1,5 +1,5 @@
 const express = require('express');
-const { submitLead, getAllLeads, getLead, updateStatus, removeLead } = require('../controllers/leadController');
+const { submitLead, getAllLeads, getLead, updateStatus, removeLead, syncToGoogleSheets } = require('../controllers/leadController');
 const { verifyAuth, verifyAdmin } = require('../middleware/auth');
 const { leadSubmissionLimiter, apiLimiter } = require('../utils/rateLimiter');
 const { validateLeadSubmission, validateStatusUpdate, handleValidationErrors } = require('../middleware/validation');
@@ -14,5 +14,8 @@ router.get('/all', apiLimiter, verifyAuth, verifyAdmin, getAllLeads);
 router.get('/:id', apiLimiter, verifyAuth, verifyAdmin, getLead);
 router.patch('/:id/status', apiLimiter, verifyAuth, verifyAdmin, validateStatusUpdate, handleValidationErrors, updateStatus);
 router.delete('/:id', apiLimiter, verifyAuth, verifyAdmin, removeLead);
+
+// Admin utility: Manual sync all unsynced leads to Google Sheets
+router.post('/sync/google-sheets', apiLimiter, verifyAuth, verifyAdmin, syncToGoogleSheets);
 
 module.exports = router;

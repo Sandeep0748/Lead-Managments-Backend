@@ -6,7 +6,7 @@ const {
   updateLeadStatus,
   deleteLead
 } = require('../services/leadService');
-const { updateLeadStatusInSheet } = require('../services/googleSheetsService');
+const { updateLeadStatusInSheet, syncAllLeadsToSheet } = require('../services/googleSheetsService');
 
 // Submit lead form
 const submitLead = async (req, res) => {
@@ -107,9 +107,22 @@ const updateStatus = async (req, res) => {
 
     const updatedLead = await updateLeadStatus(id, status);
 
-    // Update Google Sheets
+    // Update Google Sheets asynchronously if sheet_row_id exists
+    // Don't wait for this to complete - status is updated in DB regardless
     if (lead.sheet_row_id) {
-      await updateLeadStatusInSheet(lead.sheet_row_id, status);
+      updateLeadStatusInSheet(lead.sheet_row_id, status)
+        .then(syncResult => {
+          if (syncResult.success) {
+            console.log(`✓ Lead ${id} status updated in Google Sheets`);
+          } else {
+            console.warn(`⚠️ Google Sheets status update failed for lead ${id}: ${syncResult.error}`);
+          }
+        })
+        .catch(err => {
+          console.error(`❌ Google Sheets status update error for lead ${id}:`, err.message);
+        });
+    } else {
+      console.log(`ℹ️ Lead ${id} not synced to Google Sheets yet, skipping sheet update`);
     }
 
     res.json({
@@ -139,10 +152,30 @@ const removeLead = async (req, res) => {
   }
 };
 
+// Sync unsynced leads to Google Sheets (admin utility)
+const syncToGoogleSheets = async (req, res) => {
+  try {
+    console.log('📊 Admin triggered Google Sheets sync');
+    const syncResult = await syncAllLeadsToSheet();
+
+    res.json({
+      message: syncResult.message || 'Sync completed',
+      ...syncResult,
+    });
+  } catch (error) {
+    console.error('Sync to Google Sheets error:', error);
+    res.status(500).json({ 
+      error: 'Failed to sync leads to Google Sheets',
+      message: error.message 
+    });
+  }
+};
+
 module.exports = {
   submitLead,
   getAllLeads,
   getLead,
   updateStatus,
   removeLead,
+  syncToGoogleSheets,
 };
