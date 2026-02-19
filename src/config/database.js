@@ -1,5 +1,9 @@
 const { Pool } = require('pg');
-require('dotenv').config();
+
+if (!process.env.DATABASE_URL) {
+  console.error("❌ DATABASE_URL is not defined");
+  process.exit(1);
+}
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -8,8 +12,13 @@ const pool = new Pool({
   },
 });
 
+pool.on('connect', () => {
+  console.log("✓ PostgreSQL connected");
+});
+
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
+  console.error("❌ Unexpected database error:", err);
+  process.exit(1);
 });
 
 module.exports = pool;
