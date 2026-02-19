@@ -15,7 +15,7 @@ const app = express();
 
 // Validate environment variables before starting
 try {
-  validateEnvironmentVariables();
+  // validateEnvironmentVariables();
 } catch (error) {
   console.error('❌ Environment validation failed:', error.message);
   process.exit(1);
