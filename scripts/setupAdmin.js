@@ -6,7 +6,7 @@ const setupAdmin = async () => {
   try {
     console.log('\n🔧 Setting up Admin User...\n');
 
-    const email = process.env.ADMIN_EMAIL || 'admin@launchedglobal.in';
+    const email = process.env.ADMIN_EMAIL || 'sandeep1@gmail.com';
     const password = process.env.ADMIN_PASSWORD || 'Password123!';
     const name = 'Admin User';
 
