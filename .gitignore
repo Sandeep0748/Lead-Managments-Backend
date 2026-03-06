@@ -9,7 +9,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .DS_Store
-config/google-credentials.json
+
+# Google credentials
+src/config/google-service-account.json
+
 .vscode/
 .idea/
 *.swp
